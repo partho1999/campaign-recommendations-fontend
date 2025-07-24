@@ -20,7 +20,7 @@ export default function AdRecDashboard() {
     const fetchPredictionData = async () => {
       setLoading(true)
       try {
-        const url = `${apiUrl}/api/prediction-run?hours_back=${hoursBack}`
+        const url = `https://campaign-recommendations-backend.onrender.com/api/prediction-run?hours_back=24`
 
         const res = await fetch(url, {
           method: "GET",
