@@ -14,12 +14,13 @@ export default function AdRecDashboard() {
   const [filter, setFilter] = useState("ALL")
   const [response, setResponse] = useState(null)
   const [loading, setLoading] = useState(true)
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const fetchPredictionData = async () => {
       setLoading(true)
       try {
-        const url = `http://127.0.0.1:8000/api/predictions`
+        const url = `${apiUrl}/api/predictions`
 
         const res = await fetch(url, {
           method: "GET",
