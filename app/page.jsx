@@ -85,7 +85,7 @@ export default function AdRecDashboard() {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          "http://127.0.0.1:8000/api/prediction-run?hours_back=24"
+          "https://campaign-recommendations-backend.onrender.com/api/prediction-run?hours_back=24"
         )
         const data = await res.json()
         setResponse(data)
