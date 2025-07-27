@@ -98,7 +98,7 @@ export default function AdRecDashboard() {
     }
 
     fetchData()
-    const interval = setInterval(fetchData, 300000)
+    const interval = setInterval(fetchData, 10800000)
     return () => clearInterval(interval)
   }, [])
 
