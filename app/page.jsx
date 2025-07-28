@@ -87,7 +87,7 @@ export default function AdRecDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("https://campaign-recommendations-backend.onrender.com/api/prediction-run?hours_back=24")
+        const res = await fetch("https://campaign-recommendations-backend.onrender.com/api/prediction-run")
         const data = await res.json()
         setResponse(data)
       } catch (err) {
@@ -205,7 +205,7 @@ export default function AdRecDashboard() {
               <CardDescription className="text-gray-500">Grouped by Campaign ID</CardDescription>
             </CardHeader>
             <CardContent>
-              <Accordion type="multiple" defaultValue={data.slice(0, 2).map((item) => item.sub_id_3)} className="space-y-2">
+              <Accordion type="multiple" defaultValue={data.slice(0, 4).map((item) => item.sub_id_3)} className="space-y-2">
                 {data.map((campaign) => (
                   <AccordionItem key={campaign.sub_id_3} value={campaign.sub_id_3}>
                     <AccordionTrigger className="text-left text-base font-medium text-slate-800 hover:text-indigo-700">
@@ -233,8 +233,8 @@ export default function AdRecDashboard() {
                             {campaign.adset.map((ad) => (
                               <TableRow key={ad.sub_id_2}>
                                 <TableCell className="whitespace-normal break-words">{ad.sub_id_5}</TableCell>
-                                <TableCell className="whitespace-normal break-words" title={ad.campaign}>
-                                  {ad.campaign}
+                                <TableCell className="whitespace-normal break-words" title={ad.sub_id_6}>
+                                  {ad.sub_id_6}
                                 </TableCell>
                                 <TableCell>
                                   <Badge
