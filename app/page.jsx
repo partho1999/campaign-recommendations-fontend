@@ -87,7 +87,7 @@ export default function AdRecDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("https://campaign-recommendations-backend.onrender.com/api/prediction-run")
+        const res = await fetch("https://adrecommend.waywisetech.com/api/prediction-run")
         const data = await res.json()
         setResponse(data)
       } catch (err) {
@@ -209,7 +209,7 @@ export default function AdRecDashboard() {
                 {data.map((campaign) => (
                   <AccordionItem key={campaign.sub_id_3} value={campaign.sub_id_3}>
                     <AccordionTrigger className="text-left text-base font-medium text-slate-800 hover:text-indigo-700">
-                      {campaign.sub_id_6} <span className="text-sm text-slate-500 ml-2">(ID: {campaign.sub_id_3})</span>
+                      {campaign.sub_id_6} <span className="text-sm text-slate-500">(ID: {campaign.sub_id_3})</span>
                     </AccordionTrigger>
                     <AccordionContent className="pb-4">
                       <div className="border rounded-lg overflow-auto">
@@ -220,6 +220,7 @@ export default function AdRecDashboard() {
                               <TableHead>Campaign</TableHead>
                               <TableHead>Recommendation</TableHead>
                               <TableHead>Reason</TableHead>
+                              <TableHead>Suggestions</TableHead>
                               <TableHead>Cost</TableHead>
                               <TableHead>Revenue</TableHead>
                               <TableHead>Profit</TableHead>
@@ -247,6 +248,9 @@ export default function AdRecDashboard() {
                                 </TableCell>
                                 <TableCell className="whitespace-normal break-words" title={ad.reason}>
                                   {ad.reason}
+                                </TableCell>
+                                <TableCell className="whitespace-normal break-words" title={ad.suggestion}>
+                                  {ad.suggestion}
                                 </TableCell>
                                 <TableCell>{formatCurrency(ad.cost)}</TableCell>
                                 <TableCell>{formatCurrency(ad.revenue)}</TableCell>
