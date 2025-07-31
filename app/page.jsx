@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import Link from "next/link"
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button"
+import CampaignAccordion from "@/components/CampaignAccordion";
 import {
   Accordion,
   AccordionContent,
@@ -79,37 +79,89 @@ const getRecommendationIcon = (rec) => {
       return <Activity className="h-4 w-4" />
   }
 }
+const handleSearch = async () => {
+  if (!startDate || !endDate) {
+    alert("Please select both start and end dates.");
+    return;
+  }
 
-export default function AdRecDashboard() {
+  setLoading(true);
+  try {
+    const res = await fetch(`http://127.0.0.1:8000/api/predict-time-range/?start_date=${startDate}&end_date=${endDate}`);
+    const result = await res.json();
+    if (result.success) {
+      setData(result.data || []);
+    } else {
+      console.error("API error:", result.error || "Unknown error");
+      setData([]);
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+    setData([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+export default function Page() {
+  const [activeTab, setActiveTab] = useState("tab1");
   const [response, setResponse] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [data, setData] = useState([]);
 
+
+  
+  const handleSearch = async () => {
+    if (!startDate || !endDate) {
+      alert("Please select both start and end dates.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/predict-time-range/?start_date=${startDate}&end_date=${endDate}`);
+      const result = await res.json();
+      if (result.success) {
+        setData(result.data || []);
+      } else {
+        console.error("API error:", result.error || "Unknown error");
+        setData([]);
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("https://adrecommend.waywisetech.com/api/prediction-run")
-        const data = await res.json()
-        setResponse(data)
+        const res = await fetch("https://adrecommend.waywisetech.com/api/prediction-run");
+        const resData = await res.json(); // ✅ Rename here
+        setResponse(resData);
+        setData(resData.data || []);      // ✅ Use same renamed variable
       } catch (err) {
-        console.error(err)
+        console.error(err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchData()
-    const interval = setInterval(fetchData, 10800000)
-    return () => clearInterval(interval)
-  }, [])
+    fetchData();
+    const interval = setInterval(fetchData, 10800000);
+    return () => clearInterval(interval);
+  }, []);
 
-  const data = response?.data || []
+  // const data = response?.data || []
+  
   const summary = response?.summary || {}
 
-  
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6 dark:from-slate-900 dark:to-slate-950">
       <div className="max-w-7xl mx-auto space-y-8">
-
         {/* Loading */}
         {loading && (
           <Card>
@@ -118,11 +170,11 @@ export default function AdRecDashboard() {
                 <Skeleton className="h-6 w-1/3" />
                 <Skeleton className="h-4 w-2/3" />
                 <Skeleton className="h-40 w-full rounded-md" />
+                <Skeleton className="h-80 w-full rounded-md" />
               </div>
             </CardContent>
           </Card>
         )}
-
         {/* Error */}
         {response?.error && (
           <Card className="border border-red-500 bg-red-50">
@@ -132,27 +184,10 @@ export default function AdRecDashboard() {
             </CardContent>
           </Card>
         )}
-
-        
-
         {/* Summary */}
         {!loading && response?.success && Object.keys(summary).length > 0 && (
           <>
           <div className="text-center space-y-2">
-            {/* <div className="flex justify-center gap-4 mb-4">
-              <Link href="/">
-                <Button variant="outline" size="sm">
-                  <BarChart3 className="mr-2 h-4 w-4" />
-                  Live
-                </Button>
-              </Link>
-              <Link href="/predictions">
-                <Button variant="default" size="sm">
-                  <Target className="mr-2 h-4 w-4" />
-                  24 Hours
-                </Button>
-              </Link>
-            </div> */}
             <h1 className="text-4xl font-bold text-gray-900">Ad Recommendation Dashboard</h1>
             <p className="text-gray-600">Monitor and optimize your advertising campaigns</p>
             <Button onClick={() => window.location.reload()} variant="outline" size="sm" className="mt-2">
@@ -196,86 +231,90 @@ export default function AdRecDashboard() {
           </Card>
           </>
         )}
+        <div className="w-full flex flex-col items-center">
+          {/* Tabs */}
+          {!loading && response?.success && data.length > 0 && (
+            <div role="tablist" className="flex border-b border-gray-200 space-x-4 mb-4">
+              <button
+                role="tab"
+                onClick={() => setActiveTab("tab1")}
+                className={`px-4 py-2 text-sm font-medium transition ${
+                  activeTab === "tab1"
+                    ? "text-blue-600 border-b-2 border-blue-500"
+                    : "text-gray-600 hover:text-blue-600 hover:border-b-2 hover:border-blue-500"
+                }`}
+              >
+                Live Recomandations
+              </button>
+              <button
+                role="tab"
+                onClick={() => setActiveTab("tab2")}
+                className={`px-4 py-2 text-sm font-medium transition ${
+                  activeTab === "tab2"
+                    ? "text-blue-600 border-b-2 border-blue-500"
+                    : "text-gray-600 hover:text-blue-600 hover:border-b-2 hover:border-blue-500"
+                }`}
+              >
+                Time Range
+              </button>
+            </div>
+          )}
 
-        {/* Campaign Accordion */}
-        {!loading && response?.success && data.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-indigo-700">🧠 Campaign Recommendations</CardTitle>
-              <CardDescription className="text-gray-500">Grouped by Campaign ID</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Accordion type="multiple" defaultValue={data.slice(0, 4).map((item) => item.sub_id_3)} className="space-y-2">
-                {data.map((campaign) => (
-                  <AccordionItem key={campaign.sub_id_3} value={campaign.sub_id_3}>
-                    <AccordionTrigger className="text-left text-base font-medium text-slate-800 hover:text-indigo-700">
-                      {campaign.sub_id_6} <span className="text-sm text-slate-500">(ID: {campaign.sub_id_3})</span>
-                    </AccordionTrigger>
-                    <AccordionContent className="pb-4">
-                      <div className="border rounded-lg overflow-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow className="bg-slate-100">
-                              <TableHead>Adset</TableHead>
-                              <TableHead>Campaign</TableHead>
-                              <TableHead>Recommendation</TableHead>
-                              <TableHead>Reason</TableHead>
-                              <TableHead>Suggestions</TableHead>
-                              <TableHead>Cost</TableHead>
-                              <TableHead>Revenue</TableHead>
-                              <TableHead>Profit</TableHead>
-                              <TableHead>Clicks</TableHead>
-                              <TableHead>Conv. Rate</TableHead>
-                              <TableHead>ROI</TableHead>
-                              <TableHead>Priority</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {campaign.adset.map((ad) => (
-                              <TableRow key={ad.sub_id_2}>
-                                <TableCell className="whitespace-normal break-words">{ad.sub_id_5}</TableCell>
-                                <TableCell className="whitespace-normal break-words" title={ad.sub_id_6}>
-                                  {ad.sub_id_6}
-                                </TableCell>
-                                <TableCell>
-                                  <Badge
-                                    variant={getRecommendationColor(ad.recommendation)}
-                                    className="flex items-center gap-1 w-fit capitalize"
-                                  >
-                                    {getRecommendationIcon(ad.recommendation)}
-                                    {ad.recommendation}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell className="whitespace-normal break-words" title={ad.reason}>
-                                  {ad.reason}
-                                </TableCell>
-                                <TableCell className="whitespace-normal break-words" title={ad.suggestion}>
-                                  {ad.suggestion}
-                                </TableCell>
-                                <TableCell>{formatCurrency(ad.cost)}</TableCell>
-                                <TableCell>{formatCurrency(ad.revenue)}</TableCell>
-                                <TableCell className={ad.profit >= 0 ? "text-green-600" : "text-red-600"}>
-                                  {formatCurrency(ad.profit)}
-                                </TableCell>
-                                <TableCell>{ad.clicks}</TableCell>
-                                <TableCell>{formatPercentage(ad.conversion_rate)}</TableCell>
-                                <TableCell className={ad.roi_confirmed >= 0 ? "text-green-600" : "text-red-600"}>
-                                  {formatPercentage(ad.roi_confirmed / 100)}
-                                </TableCell>
-                                <TableCell>{ad.priority}</TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </CardContent>
-          </Card>
-        )}
+          {/* Tab Content */}
+          {!loading && response?.success && data.length > 0 && (
+            <div className="mt-4 text-center">
+              {activeTab === "tab1" && (
+                <CampaignAccordion data={data} loading={loading} response={response} />
+              )}
+              {activeTab === "tab2" && (
+                <>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-indigo-700 text-start">Add Filter</CardTitle>
+                      <CardDescription className="text-gray-500 text-start">
+                        Grouped by Campaign ID
+                      </CardDescription>
+                    </CardHeader>
+
+                    <CardContent>
+                          {/* Filter Form */}
+                          <div className="flex flex-wrap items-end gap-4 mb-6">
+                          <div className="min-w-[150px]">
+                              <label className="block text-sm font-medium text-gray-700">Start Date</label>
+                              <input
+                              type="date"
+                              value={startDate}
+                              onChange={e => setStartDate(e.target.value)}
+                              className="w-full border px-2 py-1 rounded"
+                              />
+                          </div>
+                          <div className="min-w-[150px]">
+                              <label className="block text-sm font-medium text-gray-700">End Date</label>
+                              <input
+                              type="date"
+                              value={endDate}
+                              onChange={e => setEndDate(e.target.value)}
+                              className="w-full border px-2 py-1 rounded"
+                              />
+                          </div>
+                          <div className="shrink-0">
+                              <button
+                              onClick={handleSearch}
+                              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                              >
+                              Search
+                              </button>
+                          </div>
+                          </div>
+                    </CardContent>
+                  </Card>
+                  <CampaignAccordion data={data} loading={loading} response={response} />
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
-  )
+  );
 }
