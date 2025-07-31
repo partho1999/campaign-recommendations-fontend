@@ -80,29 +80,7 @@ const getRecommendationIcon = (rec) => {
       return <Activity className="h-4 w-4" />
   }
 }
-const handleSearch = async () => {
-  if (!startDate || !endDate) {
-    alert("Please select both start and end dates.");
-    return;
-  }
 
-  setLoading(true);
-  try {
-    const res = await fetch(`http://127.0.0.1:8000/api/predict-time-range/?start_date=${startDate}&end_date=${endDate}`);
-    const result = await res.json();
-    if (result.success) {
-      setData(result.data || []);
-    } else {
-      console.error("API error:", result.error || "Unknown error");
-      setData([]);
-    }
-  } catch (error) {
-    console.error("Fetch error:", error);
-    setData([]);
-  } finally {
-    setLoading(false);
-  }
-};
 
 export default function Page() {
   const [activeTab, setActiveTab] = useState("tab1");
