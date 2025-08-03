@@ -139,6 +139,9 @@ export default function CampaignAccordion({ data = [], loading = false, response
                           <TableHead>Profit</TableHead>
                           <TableHead>Clicks</TableHead>
                           <TableHead>CPC</TableHead>
+                          <TableHead>GEO</TableHead>
+                          <TableHead>Country</TableHead>
+                          <TableHead>CPC Rate</TableHead>
                           <TableHead>Conv. Rate</TableHead>
                           <TableHead>ROI</TableHead>
                           <TableHead>Priority</TableHead>
@@ -174,6 +177,9 @@ export default function CampaignAccordion({ data = [], loading = false, response
                             </TableCell>
                             <TableCell>{ad.clicks}</TableCell>
                             <TableCell>{ad.cpc}</TableCell>
+                            <TableCell>{ad.geo}</TableCell>
+                            <TableCell>{ad.country}</TableCell>
+                            <TableCell>{ad.cpc_rate}</TableCell>
                             <TableCell>{formatPercentage(ad.conversion_rate)}</TableCell>
                             <TableCell className={ad.roi_confirmed >= 0 ? "text-green-600" : "text-red-600"}>
                               {formatPercentage(ad.roi_confirmed / 100)}
