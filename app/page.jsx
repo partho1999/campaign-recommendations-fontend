@@ -121,7 +121,7 @@ export default function Page() {
 
     setLoading(true);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/predict-time-range/?start_date=${startDate}&end_date=${endDate}`);
+      const res = await fetch(`https://adrecommend.waywisetech.com/api/predict-time-range/?start_date=${startDate}&end_date=${endDate}`);
       const result = await res.json();
       if (result.success) {
         setData(result.data || []);
