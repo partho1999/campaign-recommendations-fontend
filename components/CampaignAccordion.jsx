@@ -33,10 +33,31 @@ const getRecommendationColor = (rec) => {
       return "destructive";
     case "UNDER OBSERVATION":
       return "secondary";
+    case "INCREASE_BUDGET":
+      return "green";
+    case "KEEP_RUNNING":
+      return "orange";
     case "MONITOR":
       return "blue";
     case "OPTIMIZE":
-      return "green";
+      return "yellow";
+    default:
+      return "default";
+  }
+};
+
+
+const getCpcRateColor = (rec) => {
+  switch (rec) {
+    case "HIGH":
+    case "RESTRUCTURE":
+      return "destructive";  // red
+    case "UNDER OBSERVATION":
+      return "secondary";    // gray/secondary
+    case "STANDARD":
+      return "blue";      // primary (blue-ish)
+    case "LOW":
+      return "green";    // or maybe reuse secondary or outline
     default:
       return "default";
   }
@@ -179,7 +200,14 @@ export default function CampaignAccordion({ data = [], loading = false, response
                             <TableCell>{ad.cpc}</TableCell>
                             <TableCell>{ad.geo}</TableCell>
                             <TableCell>{ad.country}</TableCell>
-                            <TableCell>{ad.cpc_rate}</TableCell>
+                            <TableCell>
+                              <Badge
+                                variant={getCpcRateColor(ad.cpc_rate)}
+                                className="flex items-center gap-1 w-fit capitalize"
+                              >
+                                {ad.cpc_rate}
+                              </Badge>
+                            </TableCell>
                             <TableCell>{formatPercentage(ad.conversion_rate)}</TableCell>
                             <TableCell className={ad.roi_confirmed >= 0 ? "text-green-600" : "text-red-600"}>
                               {formatPercentage(ad.roi_confirmed / 100)}
