@@ -209,6 +209,7 @@ export default function Page() {
                 ["Total Profit/Loss", formatCurrency(summary.total_profit), summary.total_profit >= 0 ? "text-green-600" : "text-red-600"],
                 ["Total Clicks", summary.total_clicks],
                 ["Total Conversions", summary.total_conversions],
+                ["Total Adsets", summary.total_adset],
                 ["Avg ROI", formatPercentage(summary.average_roi / 100), summary.average_roi >= 0 ? "text-green-600" : "text-red-600"],
                 ["Avg Conv. Rate", formatPercentage(summary.average_conversion_rate)],
               ].map(([label, value, color], idx) => (
