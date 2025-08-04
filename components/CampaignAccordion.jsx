@@ -89,7 +89,7 @@ export default function CampaignAccordion({ data = [], loading = false, response
 
   const handlePauseAction = async (subId2) => {
     try {
-      const response = await fetch(`https://app.wijte.me/adset/pause/${subId2}`, {
+      const response = await fetch(`https://app.wijte.me/api/adset/pause/${subId2}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
