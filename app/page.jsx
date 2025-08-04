@@ -151,7 +151,7 @@ export default function Page() {
               Refresh Data
             </Button>
           </div>
-          <Card>
+          <Card className="w-full">
             <CardHeader>
               <CardTitle className="text-blue-800">📊 Summary Statistics</CardTitle>
               <CardDescription className="text-gray-500">
@@ -201,7 +201,7 @@ export default function Page() {
                     : "text-gray-600 hover:text-blue-600 hover:border-b-2 hover:border-blue-500"
                 }`}
               >
-                Live Recomandations
+                Live Recommendations
               </button>
               <button
                 role="tab"
@@ -225,7 +225,7 @@ export default function Page() {
               )}
               {activeTab === "tab2" && (
                 <>
-                  <Card>
+                  <Card className="w-full">
                     <CardHeader>
                       <CardTitle className="text-indigo-700 text-start">Add Filter</CardTitle>
                       <CardDescription className="text-gray-500 text-start">
@@ -257,7 +257,8 @@ export default function Page() {
                           <div className="shrink-0">
                               <button
                               onClick={handleSearch}
-                              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                              disabled={loading}
+                              className={`px-4 py-2 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"} text-white rounded`}
                               >
                               Search
                               </button>

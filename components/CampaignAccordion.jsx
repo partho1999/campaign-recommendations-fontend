@@ -46,18 +46,17 @@ const getRecommendationColor = (rec) => {
   }
 };
 
-
 const getCpcRateColor = (rec) => {
   switch (rec) {
     case "HIGH":
     case "RESTRUCTURE":
-      return "destructive";  // red
+      return "destructive";
     case "UNDER OBSERVATION":
-      return "secondary";    // gray/secondary
+      return "secondary";
     case "STANDARD":
-      return "blue";      // primary (blue-ish)
+      return "blue";
     case "LOW":
-      return "green";    // or maybe reuse secondary or outline
+      return "green";
     default:
       return "default";
   }
@@ -104,7 +103,7 @@ export default function CampaignAccordion({ data = [], loading = false, response
   };
 
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-indigo-700 text-start">🧠 Campaign Recommendations</CardTitle>
         <CardDescription className="text-gray-500 text-start">Grouped by Campaign ID</CardDescription>
@@ -128,7 +127,11 @@ export default function CampaignAccordion({ data = [], loading = false, response
           ))}
         </div>
 
-        <Accordion type="multiple" defaultValue={data.slice(0, 4).map((item) => item.sub_id_3)} className="space-y-2">
+        <Accordion
+          type="multiple"
+          defaultValue={data.slice(0, 4).map((item) => item.id?.toString())}
+          className="space-y-2"
+        >
           {data.map((campaign) => {
             const filteredAdsets = selectedRecommendation
               ? campaign.adset.filter((ad) => ad.recommendation === selectedRecommendation)
@@ -137,7 +140,7 @@ export default function CampaignAccordion({ data = [], loading = false, response
             if (filteredAdsets.length === 0) return null;
 
             return (
-              <AccordionItem key={campaign.sub_id_3} value={campaign.sub_id_3}>
+              <AccordionItem key={campaign.id} value={campaign.id?.toString()}>
                 <AccordionTrigger className="text-left text-base font-medium text-slate-800 hover:text-indigo-700">
                   {campaign.sub_id_6}{" "}
                   <span className="text-sm text-slate-500">(ID: {campaign.sub_id_3})</span>
