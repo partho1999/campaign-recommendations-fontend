@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -77,6 +77,13 @@ const getRecommendationIcon = (rec) => {
 
 export default function CampaignAccordion({ data = [], loading = false, response = {} }) {
   const [selectedRecommendation, setSelectedRecommendation] = useState("");
+  const [openItems, setOpenItems] = useState([]);
+
+  useEffect(() => {
+    if (data?.length > 0) {
+      setOpenItems(data.slice(0, 4).map((item) => item.id?.toString()));
+    }
+  }, [data]);
 
   if (loading || !response?.success || data.length === 0) return null;
 
@@ -129,7 +136,8 @@ export default function CampaignAccordion({ data = [], loading = false, response
 
         <Accordion
           type="multiple"
-          defaultValue={data.slice(0, 4).map((item) => item.id?.toString())}
+          value={openItems}
+          onValueChange={setOpenItems}
           className="space-y-2"
         >
           {data.map((campaign) => {

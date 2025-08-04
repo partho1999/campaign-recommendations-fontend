@@ -194,7 +194,10 @@ export default function Page() {
             <div role="tablist" className="flex border-b border-gray-200 space-x-4 mb-4">
               <button
                 role="tab"
-                onClick={() => setActiveTab("tab1")}
+                onClick={() => {
+                  setActiveTab("tab1");
+                  window.location.reload();
+                }}
                 className={`px-4 py-2 text-sm font-medium transition ${
                   activeTab === "tab1"
                     ? "text-blue-600 border-b-2 border-blue-500"
