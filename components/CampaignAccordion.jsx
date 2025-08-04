@@ -25,6 +25,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatPercentage } from "@/lib/utils";
 import { Pause, Eye, Activity } from "lucide-react";
+import ActionModal from "@/components/ActionModal";
 
 const getRecommendationColor = (rec) => {
   switch (rec) {
@@ -225,14 +226,17 @@ export default function CampaignAccordion({ data = [], loading = false, response
                             </TableCell>
                             <TableCell>{ad.priority}</TableCell>
                             <TableCell>
-                              {ad.recommendation === "PAUSE" && (
-                                <button
-                                  onClick={() => handlePauseAction(ad.sub_id_2)}
-                                  className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 text-sm"
-                                >
-                                  PAUSE
-                                </button>
-                              )}
+                              {ad.recommendation === "PAUSE" ? (
+                                  <button
+                                    onClick={() => handlePauseAction(ad.sub_id_2)}
+                                    className="bg-destructive text-white px-2 py-1 rounded hover:bg-destructive/80 text-sm"
+                                  >
+                                    PAUSE
+                                  </button>
+                                ) : ad.recommendation === "OPTIMIZE" || ad.recommendation === "INCREASE_BUDGET" ? (
+                                  <ActionModal initialCount={ad.budget_change_pct} />
+                                ) : null
+                              }
                             </TableCell>
                           </TableRow>
                         ))}
