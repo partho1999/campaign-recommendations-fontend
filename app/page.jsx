@@ -49,60 +49,6 @@ const formatCurrency = (amount) =>
 const formatPercentage = (value) =>
   `${(value * 100).toFixed(2)}%`
 
-const getRecommendationColor = (rec) => {
-  switch (rec) {
-    case "PAUSE":
-      return "destructive"
-    case "RESTRUCTURE":
-      return "destructive"
-    case "UNDER OBSERVATION":
-      return "secondary"
-    case "MONITOR":
-      return "blue"
-    case "OPTIMIZE":
-      return "green"
-    default:
-      return "default"
-  }
-}
-
-const getRecommendationIcon = (rec) => {
-  switch (rec) {
-    case "PAUSE":
-      return <Pause className="h-4 w-4" />
-    case "UNDER OBSERVATION":
-    case "MONITOR":
-      return <Eye className="h-4 w-4" />
-    case "OPTIMIZE":
-      return <Activity className="h-4 w-4" />
-    default:
-      return <Activity className="h-4 w-4" />
-  }
-}
-const handleSearch = async () => {
-  if (!startDate || !endDate) {
-    alert("Please select both start and end dates.");
-    return;
-  }
-
-  setLoading(true);
-  try {
-    const res = await fetch(`http://127.0.0.1:8000/api/predict-time-range/?start_date=${startDate}&end_date=${endDate}`);
-    const result = await res.json();
-    if (result.success) {
-      setData(result.data || []);
-    } else {
-      console.error("API error:", result.error || "Unknown error");
-      setData([]);
-    }
-  } catch (error) {
-    console.error("Fetch error:", error);
-    setData([]);
-  } finally {
-    setLoading(false);
-  }
-};
-
 export default function Page() {
   const [activeTab, setActiveTab] = useState("tab1");
   const [response, setResponse] = useState(null)
