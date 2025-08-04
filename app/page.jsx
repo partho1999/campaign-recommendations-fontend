@@ -124,6 +124,7 @@ export default function Page() {
       const res = await fetch(`https://adrecommend.waywisetech.com/api/predict-time-range/?start_date=${startDate}&end_date=${endDate}`);
       const result = await res.json();
       if (result.success) {
+        setResponse(result); 
         setData(result.data || []);
       } else {
         console.error("API error:", result.error || "Unknown error");
