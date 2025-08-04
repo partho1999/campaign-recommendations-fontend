@@ -65,6 +65,15 @@ export default function Page() {
       return;
     }
 
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (start >= end) {
+      alert("Start date must be earlier than end date.");
+      return;
+    }
+
+
     setLoading(true);
     try {
       const res = await fetch(`https://adrecommend.waywisetech.com/api/predict-time-range/?start_date=${startDate}&end_date=${endDate}`);
