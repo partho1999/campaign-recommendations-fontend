@@ -3,7 +3,7 @@ import { useState } from "react";
 
 
 
-export default function ActionModal({ initialCount = 1,  campaign_id = null}) {
+export default function ActionModal({ initialCount = 1,  campaign_id = null, recomendations=null}) {
   const [isOpen, setIsOpen] = useState(false);
   const [count, setCount] = useState(initialCount);
 
@@ -111,7 +111,7 @@ export default function ActionModal({ initialCount = 1,  campaign_id = null}) {
 
             {/* Conditional Buttons */}
             <div className="flex justify-center gap-4 py-4">
-              {(count < initialCount || initialCount < 0) && (
+              {(count < initialCount || initialCount < 0 || (recomendations === "OPTIMIZE" && initialCount === 0)) && (
                 <button 
                   onClick={handleDecrease}
                   className="px-8 py-2 bg-destructive text-white rounded hover:bg-destructive/80 transition text-sm"

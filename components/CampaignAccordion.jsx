@@ -234,7 +234,7 @@ export default function CampaignAccordion({ data = [], loading = false, response
                                     PAUSE
                                   </button>
                                 ) : ad.recommendation === "OPTIMIZE" || ad.recommendation === "INCREASE_BUDGET" ? (
-                                  <ActionModal initialCount={ad.budget_change_pct} campaign_id={campaign.sub_id_3} />
+                                  <ActionModal initialCount={ad.budget_change_pct} campaign_id={campaign.sub_id_3} recomendations={ad.recommendation} />
                                 ) : null
                               }
                             </TableCell>
