@@ -66,13 +66,7 @@ export default function ActionModal({ initialCount = 1 }) {
                 </button>
               )}
 
-              {count > initialCount && (
-                <button className="px-8 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition text-sm">
-                  Increase
-                </button>
-              )}
-
-              {count === initialCount && initialCount >= 0 && (
+              {(count >= initialCount && initialCount >= 0) && (
                 <button className="px-8 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition text-sm">
                   Increase
                 </button>
