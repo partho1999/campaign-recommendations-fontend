@@ -1,12 +1,34 @@
 "use client";
 import { useState } from "react";
 
+
+
 export default function ActionModal({ initialCount = 1 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [count, setCount] = useState(initialCount);
 
   const increment = () => setCount((prev) => prev + 1);
   const decrement = () => setCount((prev) => prev - 1);
+
+  const handleIncrease = () => {
+    console.log("Increase clicked");
+
+    const percentage = count / 100;
+    const result = 1 + percentage;
+
+    console.log("Increment:", result);
+    alert(`Increment value: ${result.toFixed(4)}`);
+  };
+
+  const handleDecrease = () => {
+    console.log("Decrease clicked");
+
+    const percentage = count / 100;
+    const result = 1 - percentage;
+
+    console.log("Decrement:", result);
+    alert(`Decrement value: ${result.toFixed(4)}`);
+  };
 
   return (
     <>
@@ -61,13 +83,19 @@ export default function ActionModal({ initialCount = 1 }) {
             {/* Conditional Buttons */}
             <div className="flex justify-center gap-4 py-4">
               {(count < initialCount || initialCount < 0) && (
-                <button className="px-8 py-2 bg-destructive text-white rounded hover:bg-destructive/80 transition text-sm">
+                <button 
+                  onClick={handleDecrease}
+                  className="px-8 py-2 bg-destructive text-white rounded hover:bg-destructive/80 transition text-sm"
+                >
                   Decrease
                 </button>
               )}
 
               {(count >= initialCount && initialCount >= 0) && (
-                <button className="px-8 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition text-sm">
+                <button 
+                  onClick={handleIncrease}
+                  className="px-8 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition text-sm"
+                >
                   Increase
                 </button>
               )}
