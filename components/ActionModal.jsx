@@ -3,7 +3,7 @@ import { useState } from "react";
 
 
 
-export default function ActionModal({ initialCount = 1 }) {
+export default function ActionModal({ initialCount = 1,  campaign_id = null}) {
   const [isOpen, setIsOpen] = useState(false);
   const [count, setCount] = useState(initialCount);
 
@@ -17,7 +17,8 @@ export default function ActionModal({ initialCount = 1 }) {
     const result = 1 + percentage;
 
     console.log("Increment:", result);
-    alert(`Increment value: ${result.toFixed(4)}`);
+    // alert(`Increment value: ${result.toFixed(2)}`);
+    updateBudget(result);
   };
 
   const handleDecrease = () => {
@@ -27,7 +28,35 @@ export default function ActionModal({ initialCount = 1 }) {
     const result = 1 - percentage;
 
     console.log("Decrement:", result);
-    alert(`Decrement value: ${result.toFixed(4)}`);
+    // alert(`Decrement value: ${result.toFixed(2)}`);
+    updateBudget(result);
+  };
+
+  const updateBudget = async (multiplier) => {
+    if (!campaign_id) return;
+
+    try {
+      const response = await fetch(`https://app.wijte.me/api/campaign/budget/${campaign_id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ 
+          "multiplier" : multiplier 
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update budget: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Budget update response:", data);
+      alert("Budget updated successfully!");
+    } catch (error) {
+      console.error("Error updating budget:", error);
+      alert("Failed to update budget.");
+    }
   };
 
   return (
