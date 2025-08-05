@@ -29,7 +29,7 @@ export default function ActionModal({ initialCount = 1 }) {
             </button>
 
             {/* Modal Content */}
-            <h3 className="text-lg font-bold mb-4">Hello!</h3>
+            <h3 className="text-lg font-bold mb-4">Update Budget</h3>
             <p className="mb-4">Use the counter below:</p>
 
             {/* Centered Counter */}
@@ -41,9 +41,14 @@ export default function ActionModal({ initialCount = 1 }) {
                 >
                   -
                 </button>
-                <span className="text-lg font-medium w-10 text-center">
-                  {count}
-                </span>
+
+                <input
+                  type="text"
+                  value={count}
+                  onChange={(e) => setCount(Number(e.target.value))}
+                  className="text-lg font-medium w-16 text-center border border-gray-300 rounded px-1"
+                />
+
                 <button
                   onClick={increment}
                   className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xl font-bold"
@@ -55,17 +60,19 @@ export default function ActionModal({ initialCount = 1 }) {
 
             {/* Conditional Buttons */}
             <div className="flex justify-center gap-4 py-4">
-              {count < initialCount && (
+              {(count < initialCount || initialCount < 0) && (
                 <button className="px-8 py-2 bg-destructive text-white rounded hover:bg-destructive/80 transition text-sm">
                   Decrease
                 </button>
               )}
+
               {count > initialCount && (
                 <button className="px-8 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition text-sm">
                   Increase
                 </button>
               )}
-              {count == initialCount && (
+
+              {count === initialCount && initialCount >= 0 && (
                 <button className="px-8 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition text-sm">
                   Increase
                 </button>
