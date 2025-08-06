@@ -17,9 +17,9 @@ export default function ActionModal({ initialCount = 1,  campaign_id = null, rec
     const percentage = count / 100;
     const result = isIncrease ? 1 + percentage : 1 - percentage;
 
-    console.log(isIncrease ? "Increment:" : "Decrement:", result);
+    console.log(isIncrease ? "Increment:" : "Decrement:", result.toFixed(2));
     // alert(`${isIncrease ? 'Increment' : 'Decrement'} value: ${result.toFixed(2)}`);
-    updateBudget(result);
+    updateBudget(result.toFixed(2));
   };
 
   const updateBudget = async (multiplier) => {
