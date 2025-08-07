@@ -150,12 +150,32 @@ export default function CampaignAccordion({ data = [], loading = false, response
 
             return (
               <AccordionItem key={campaign.id} value={campaign.id?.toString()}>
-                <AccordionTrigger className="text-left text-base font-medium text-slate-800 hover:text-indigo-700">
-                  {campaign.sub_id_6}{" "}
-                  <span className="text-sm text-slate-500">(ID: {campaign.sub_id_3})</span>
-                  {campaign.day && (
-                    <span className="text-sm text-slate-500 ml-2">(Date: {campaign.day})</span>
-                  )}
+                <AccordionTrigger className="flex justify-between items-center gap-2 text-left text-base font-medium text-slate-800 hover:text-indigo-700">
+                  <div>
+                    {campaign.sub_id_6}{" "}
+                    <span className="text-sm text-slate-500">(ID: {campaign.sub_id_3})</span>
+                    {campaign.day && (
+                      <span className="text-sm text-slate-500 ml-2">(Date: {campaign.day})</span>
+                    )}
+                  </div>
+
+                  <div className="">
+                      {/* 🧮 Calculate Mean and Show ActionModal */}
+                      {(() => {
+                        const increaseBudgetAdsets = campaign.adset.filter(ad => ad.recommendation === "INCREASE_BUDGET");
+                        const meanPct = increaseBudgetAdsets.length > 0
+                          ? increaseBudgetAdsets.reduce((sum, ad) => sum + (ad.budget_change_pct || 0), 0) / increaseBudgetAdsets.length
+                          : 0;
+
+                        return increaseBudgetAdsets.length > 0 ? (
+                          <ActionModal 
+                            initialCount={parseFloat(meanPct.toFixed(2))}
+                            campaign_id={campaign.sub_id_3}
+                            recomendations="INCREASE_BUDGET"
+                          />
+                        ) : null;
+                      })()}
+                  </div> 
                 </AccordionTrigger>
                 <AccordionContent className="pb-4">
                   <div className="border rounded-lg overflow-auto">
@@ -233,8 +253,6 @@ export default function CampaignAccordion({ data = [], loading = false, response
                                   >
                                     PAUSE
                                   </button>
-                                ) : ad.recommendation === "INCREASE_BUDGET" ? (
-                                  <ActionModal initialCount={ad.budget_change_pct} campaign_id={campaign.sub_id_3} recomendations={ad.recommendation} />
                                 ) : null
                               }
                             </TableCell>
