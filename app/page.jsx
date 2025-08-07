@@ -95,7 +95,7 @@ export default function Page() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("https://adrecommend.waywisetech.com/api/prediction-run");
+        const res = await fetch("https://adrecommend.waywisetech.com/api/predictions-combine");
         const resData = await res.json(); // ✅ Rename here
         setResponse(resData);
         setData(resData.data || []);      // ✅ Use same renamed variable

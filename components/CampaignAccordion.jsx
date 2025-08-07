@@ -26,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatPercentage } from "@/lib/utils";
 import { Pause, Eye, Activity } from "lucide-react";
 import ActionModal from "@/components/ActionModal";
+import ConfirmModal from "@/components/ConfirmModal"; // 👈 import modal
 
 const getRecommendationColor = (rec) => {
   switch (rec) {
@@ -79,14 +80,14 @@ const getRecommendationIcon = (rec) => {
 export default function CampaignAccordion({ data = [], loading = false, response = {} }) {
   const [selectedRecommendation, setSelectedRecommendation] = useState("");
   const [openItems, setOpenItems] = useState([]);
+  const [showConfirmModal, setShowConfirmModal] = useState(false); // 👈 modal state
+  const [selectedAdsetId, setSelectedAdsetId] = useState(null);     // 👈 paused adset id
 
   useEffect(() => {
     if (data?.length > 0) {
       setOpenItems(data.slice(0, 4).map((item) => item.id?.toString()));
     }
   }, [data]);
-
-  if (loading || !response?.success || data.length === 0) return null;
 
   const handlePauseAction = async (subId2) => {
     try {
@@ -110,6 +111,8 @@ export default function CampaignAccordion({ data = [], loading = false, response
     }
   };
 
+  if (loading || !response?.success || data.length === 0) return null;
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -117,10 +120,9 @@ export default function CampaignAccordion({ data = [], loading = false, response
         <CardDescription className="text-gray-500 text-start">Grouped by Campaign ID</CardDescription>
       </CardHeader>
       <CardContent>
-        {/* 🔍 Recommendation Filter */}
         <div className="mb-4 flex items-center gap-2 flex-wrap">
           <span className="text-sm font-medium text-gray-700">Filter by Recommendation:</span>
-          {["", "PAUSE","INCREASE_BUDGET", "OPTIMIZE", "RESTRUCTURE", "KEEP_RUNNING", "REVIEW"].map((rec) => (
+          {["", "PAUSE", "INCREASE_BUDGET", "OPTIMIZE", "RESTRUCTURE", "KEEP_RUNNING", "REVIEW"].map((rec) => (
             <button
               key={rec || "all"}
               onClick={() => setSelectedRecommendation(rec)}
@@ -150,12 +152,34 @@ export default function CampaignAccordion({ data = [], loading = false, response
 
             return (
               <AccordionItem key={campaign.id} value={campaign.id?.toString()}>
-                <AccordionTrigger className="text-left text-base font-medium text-slate-800 hover:text-indigo-700">
-                  {campaign.sub_id_6}{" "}
-                  <span className="text-sm text-slate-500">(ID: {campaign.sub_id_3})</span>
-                  {campaign.day && (
-                    <span className="text-sm text-slate-500 ml-2">(Date: {campaign.day})</span>
-                  )}
+                <AccordionTrigger className="w-full text-left text-base font-medium text-slate-800 hover:text-indigo-700">
+                  <div className="w-full grid grid-cols-3 items-end">
+                    {/* Column 1: Left-aligned sub_id_6 */}
+                    <div className="text-sm text-slate-500 text-left">
+                      {campaign.sub_id_6}
+                    </div>
+
+                    {/* Column 2: Center-aligned sub_id_3 and day */}
+                    <div className="text-sm text-slate-500 text-center">
+                      <span>(ID: {campaign.sub_id_3})</span>
+                      {campaign.day && (
+                        <span className="ml-2">(Date: {campaign.day})</span>
+                      )}
+                    </div>
+
+                    {/* Column 3: Right-aligned ActionModal */}
+                    <div className="text-sm text-slate-500 text-right pr-8">
+                      {campaign.recommendation === "INCREASE_BUDGET" && (
+                        <div className="inline-block"  onClick={(e) => e.stopPropagation()}>
+                          <ActionModal
+                            initialCount={campaign.recommendation_percentage}
+                            campaign_id={campaign.sub_id_3}
+                            recomendations={campaign.recommendation}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </AccordionTrigger>
                 <AccordionContent className="pb-4">
                   <div className="border rounded-lg overflow-auto">
@@ -227,16 +251,16 @@ export default function CampaignAccordion({ data = [], loading = false, response
                             <TableCell>{ad.priority}</TableCell>
                             <TableCell>
                               {ad.recommendation === "PAUSE" ? (
-                                  <button
-                                    onClick={() => handlePauseAction(ad.sub_id_2)}
-                                    className="bg-destructive text-white px-2 py-1 rounded hover:bg-destructive/80 text-sm"
-                                  >
-                                    PAUSE
-                                  </button>
-                                ) : ad.recommendation === "INCREASE_BUDGET" ? (
-                                  <ActionModal initialCount={ad.budget_change_pct} campaign_id={campaign.sub_id_3} recomendations={ad.recommendation} />
-                                ) : null
-                              }
+                                <button
+                                  onClick={() => {
+                                    setSelectedAdsetId(ad.sub_id_2);
+                                    setShowConfirmModal(true);
+                                  }}
+                                  className="bg-destructive text-white px-2 py-1 rounded hover:bg-destructive/80 text-sm"
+                                >
+                                  PAUSE
+                                </button>
+                              ) : null}
                             </TableCell>
                           </TableRow>
                         ))}
@@ -249,6 +273,18 @@ export default function CampaignAccordion({ data = [], loading = false, response
           })}
         </Accordion>
       </CardContent>
+
+      {/* Confirm Pause Modal */}
+      <ConfirmModal
+        open={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={() => {
+          if (selectedAdsetId) {
+            handlePauseAction(selectedAdsetId);
+            setShowConfirmModal(false);
+          }
+        }}
+      />
     </Card>
   );
 }

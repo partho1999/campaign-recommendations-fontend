@@ -1,15 +1,13 @@
 "use client";
 import { useState } from "react";
 
-
-
-export default function ActionModal({ initialCount = 1,  campaign_id = null, recomendations=null}) {
+export default function ActionModal({ initialCount = 1, campaign_id = null, recomendations = null }) {
   const [isOpen, setIsOpen] = useState(false);
   const [count, setCount] = useState(initialCount);
   const [isIncrease, setIsIncrease] = useState(true);
 
   const increment = () => setCount((prev) => prev + 1);
-  const decrement = () => setCount((prev) => prev - 1);
+  const decrement = () => setCount((prev) => Math.max(prev - 1, 0));
 
   const handleAction = () => {
     console.log(isIncrease ? "Increase clicked" : "Decrease clicked");
@@ -18,7 +16,6 @@ export default function ActionModal({ initialCount = 1,  campaign_id = null, rec
     const result = isIncrease ? 1 + percentage : 1 - percentage;
 
     console.log(isIncrease ? "Increment:" : "Decrement:", result.toFixed(2));
-    // alert(`${isIncrease ? 'Increment' : 'Decrement'} value: ${result.toFixed(2)}`);
     updateBudget(result.toFixed(2));
   };
 
@@ -31,8 +28,8 @@ export default function ActionModal({ initialCount = 1,  campaign_id = null, rec
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          "multiplier" : multiplier 
+        body: JSON.stringify({
+          multiplier: multiplier,
         }),
       });
 
@@ -59,12 +56,12 @@ export default function ActionModal({ initialCount = 1,  campaign_id = null, rec
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md relative overflow-hidden border border-gray-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md relative overflow-hidden border border-gray-100 mx-auto">
             {/* Header */}
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-xl font-semibold text-white">Budget Adjustment</h3>
+                <h3 className="text-xl font-semibold text-white text-center">Budget Adjustment</h3>
                 <button
                   onClick={() => setIsOpen(false)}
                   className="text-white/80 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10"
@@ -78,12 +75,12 @@ export default function ActionModal({ initialCount = 1,  campaign_id = null, rec
 
             {/* Content */}
             <div className="p-6">
+              {/* Percentage Adjustment */}
               <div className="mb-6">
-                <p className="text-gray-600 text-sm mb-4">Adjust your campaign budget by setting the percentage below:</p>
-                
-                {/* Percentage Input */}
+                <p className="text-gray-600 text-sm mb-4 text-center">Adjust your campaign budget by setting the percentage below:</p>
+
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Percentage Adjustment</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-4 text-center">Percentage Adjustment</label>
                   <div className="flex items-center justify-center gap-3">
                     <button
                       onClick={decrement}
@@ -118,41 +115,41 @@ export default function ActionModal({ initialCount = 1,  campaign_id = null, rec
                 </div>
               </div>
 
-                             {/* Action Switch */}
-               <div className="mb-6">
-                 <label className="block text-sm font-medium text-gray-700 mb-3">Action Type</label>
-                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                   <div className="flex items-center justify-center">
-                     <div className="flex items-center gap-4">
-                       <span className={`text-sm font-medium transition-colors ${!isIncrease ? 'text-gray-900' : 'text-gray-500'}`}>
-                         Decrease
-                       </span>
-                       <button
-                         onClick={() => setIsIncrease(!isIncrease)}
-                         className={`relative inline-flex h-8 w-16 items-center rounded-full transition-all duration-300 ${
-                           isIncrease ? 'bg-green-500' : 'bg-gray-300'
-                         }`}
-                       >
-                         <span
-                           className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-lg transition-transform duration-300 ${
-                             isIncrease ? 'translate-x-8' : 'translate-x-1'
-                           }`}
-                         />
-                       </button>
-                       <span className={`text-sm font-medium transition-colors ${isIncrease ? 'text-gray-900' : 'text-gray-500'}`}>
-                         Increase
-                       </span>
-                     </div>
-                   </div>
-                 </div>
-               </div>
+              {/* Action Type Toggle */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-3 text-center">Action Type</label>
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                  <div className="flex items-center justify-center">
+                    <div className="flex items-center gap-4">
+                      <span className={`text-sm font-medium transition-colors ${!isIncrease ? 'text-gray-900' : 'text-gray-500'}`}>
+                        Decrease
+                      </span>
+                      <button
+                        onClick={() => setIsIncrease(!isIncrease)}
+                        className={`relative inline-flex h-8 w-16 items-center rounded-full transition-all duration-300 ${
+                          isIncrease ? 'bg-green-500' : 'bg-gray-300'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-lg transition-transform duration-300 ${
+                            isIncrease ? 'translate-x-8' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                      <span className={`text-sm font-medium transition-colors ${isIncrease ? 'text-gray-900' : 'text-gray-500'}`}>
+                        Increase
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               {/* Action Button */}
-              <button 
+              <button
                 onClick={handleAction}
                 className={`w-full py-3 px-6 text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] ${
-                  isIncrease 
-                    ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg hover:shadow-xl' 
+                  isIncrease
+                    ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg hover:shadow-xl'
                     : 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-lg hover:shadow-xl'
                 }`}
               >
