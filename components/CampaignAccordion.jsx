@@ -190,22 +190,7 @@ export default function CampaignAccordion({
                 <AccordionTrigger className="w-full text-left text-base font-medium text-slate-800 hover:text-indigo-700">
                   <div className="w-full grid grid-cols-3 items-end">
                     <div className="text-sm text-slate-500 text-left">
-                      <span
-                        onMouseEnter={() => {
-                          const timeout = setTimeout(() => {
-                            setHoveredCampaign(campaign);
-                            setHoverModalOpen(true);
-                          }, 300); // 300ms delay
-                          setHoverTimeout(timeout);
-                        }}
-                        onMouseLeave={() => {
-                          if (hoverTimeout) clearTimeout(hoverTimeout);
-                          setHoverModalOpen(false);
-                          setHoveredCampaign(null);
-                        }}
-                      >
-                        {campaign.sub_id_6}
-                      </span>
+                      <span>{campaign.sub_id_6}</span>
                     </div>
                     <div className="text-sm text-slate-500 text-center">
                       <span>(ID: {campaign.sub_id_3})</span>
@@ -213,7 +198,17 @@ export default function CampaignAccordion({
                         <span className="ml-2">(Date: {campaign.day})</span>
                       )}
                     </div>
-                    <div className="text-sm text-slate-500 text-right pr-8">
+                    <div className="text-sm text-slate-500 text-right pr-8 ">
+                      <button
+                        className="text-sm text-indigo-600 underline hover:text-indigo-800 pr-4"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent accordion toggle
+                          setHoveredCampaign(campaign);
+                          setHoverModalOpen(true);
+                        }}
+                      >
+                        View Summary
+                      </button>
                       {campaign.recommendation === "INCREASE_BUDGET" && (
                         <div
                           className="inline-block"
