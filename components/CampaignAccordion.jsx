@@ -6,13 +6,13 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardContent
+  CardContent,
 } from "@/components/ui/card";
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
-  AccordionContent
+  AccordionContent,
 } from "@/components/ui/accordion";
 import {
   Table,
@@ -20,13 +20,13 @@ import {
   TableRow,
   TableHead,
   TableBody,
-  TableCell
+  TableCell,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatPercentage } from "@/lib/utils";
 import { Pause, Eye, Activity } from "lucide-react";
 import ActionModal from "@/components/ActionModal";
-import ConfirmModal from "@/components/ConfirmModal"; // 👈 import modal
+import ConfirmModal from "@/components/ConfirmModal";
 
 const getRecommendationColor = (rec) => {
   switch (rec) {
@@ -77,11 +77,17 @@ const getRecommendationIcon = (rec) => {
   }
 };
 
-export default function CampaignAccordion({ data = [], loading = false, response = {} }) {
+export default function CampaignAccordion({
+  data = [],
+  loading = false,
+  response = {},
+}) {
   const [selectedRecommendation, setSelectedRecommendation] = useState("");
   const [openItems, setOpenItems] = useState([]);
-  const [showConfirmModal, setShowConfirmModal] = useState(false); // 👈 modal state
-  const [selectedAdsetId, setSelectedAdsetId] = useState(null);     // 👈 paused adset id
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [selectedAdsetId, setSelectedAdsetId] = useState(null);
+  const [hoveredCampaign, setHoveredCampaign] = useState(null);
+  const [hoverModalOpen, setHoverModalOpen] = useState(false);
 
   useEffect(() => {
     if (data?.length > 0) {
@@ -91,22 +97,21 @@ export default function CampaignAccordion({ data = [], loading = false, response
 
   const handlePauseAction = async (subId2) => {
     try {
-      const response = await fetch(`https://app.wijte.me/api/adset/pause/${subId2}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
+      const response = await fetch(
+        `https://app.wijte.me/api/adset/pause/${subId2}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      });
+      );
 
-      if (!response.ok) {
-        throw new Error(`Failed to pause adset ${subId2}`);
-      }
+      if (!response.ok) throw new Error(`Failed to pause adset ${subId2}`);
 
       const result = await response.json();
-      console.log("Pause successful:", result);
       alert(`Adset ${subId2} paused successfully.`);
     } catch (error) {
-      console.error("Error pausing adset:", error);
       alert(`Failed to pause Adset ${subId2}`);
     }
   };
@@ -114,15 +119,30 @@ export default function CampaignAccordion({ data = [], loading = false, response
   if (loading || !response?.success || data.length === 0) return null;
 
   return (
-    <Card className="w-full">
+    <Card className="w-full relative">
       <CardHeader>
-        <CardTitle className="text-indigo-700 text-start">🧠 Campaign Recommendations</CardTitle>
-        <CardDescription className="text-gray-500 text-start">Grouped by Campaign ID</CardDescription>
+        <CardTitle className="text-indigo-700 text-start">
+          🧠 Campaign Recommendations
+        </CardTitle>
+        <CardDescription className="text-gray-500 text-start">
+          Grouped by Campaign ID
+        </CardDescription>
       </CardHeader>
+
       <CardContent>
         <div className="mb-4 flex items-center gap-2 flex-wrap">
-          <span className="text-sm font-medium text-gray-700">Filter by Recommendation:</span>
-          {["", "PAUSE", "INCREASE_BUDGET", "OPTIMIZE", "RESTRUCTURE", "KEEP_RUNNING", "REVIEW"].map((rec) => (
+          <span className="text-sm font-medium text-gray-700">
+            Filter by Recommendation:
+          </span>
+          {[
+            "",
+            "PAUSE",
+            "INCREASE_BUDGET",
+            "OPTIMIZE",
+            "RESTRUCTURE",
+            "KEEP_RUNNING",
+            "REVIEW",
+          ].map((rec) => (
             <button
               key={rec || "all"}
               onClick={() => setSelectedRecommendation(rec)}
@@ -145,32 +165,42 @@ export default function CampaignAccordion({ data = [], loading = false, response
         >
           {data.map((campaign) => {
             const filteredAdsets = selectedRecommendation
-              ? campaign.adset.filter((ad) => ad.recommendation === selectedRecommendation)
+              ? campaign.adset.filter(
+                  (ad) => ad.recommendation === selectedRecommendation
+                )
               : campaign.adset;
 
             if (filteredAdsets.length === 0) return null;
 
             return (
               <AccordionItem key={campaign.id} value={campaign.id?.toString()}>
-                <AccordionTrigger className="w-full text-left text-base font-medium text-slate-800 hover:text-indigo-700">
+                <AccordionTrigger
+                  className="w-full text-left text-base font-medium text-slate-800 hover:text-indigo-700"
+                  onMouseEnter={() => {
+                    setHoveredCampaign(campaign);
+                    setHoverModalOpen(true);
+                  }}
+                  onMouseLeave={() => {
+                    setHoverModalOpen(false);
+                    setHoveredCampaign(null);
+                  }}
+                >
                   <div className="w-full grid grid-cols-3 items-end">
-                    {/* Column 1: Left-aligned sub_id_6 */}
                     <div className="text-sm text-slate-500 text-left">
                       {campaign.sub_id_6}
                     </div>
-
-                    {/* Column 2: Center-aligned sub_id_3 and day */}
                     <div className="text-sm text-slate-500 text-center">
                       <span>(ID: {campaign.sub_id_3})</span>
                       {campaign.day && (
                         <span className="ml-2">(Date: {campaign.day})</span>
                       )}
                     </div>
-
-                    {/* Column 3: Right-aligned ActionModal */}
                     <div className="text-sm text-slate-500 text-right pr-8">
                       {campaign.recommendation === "INCREASE_BUDGET" && (
-                        <div className="inline-block"  onClick={(e) => e.stopPropagation()}>
+                        <div
+                          className="inline-block"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <ActionModal
                             initialCount={campaign.recommendation_percentage}
                             campaign_id={campaign.sub_id_3}
@@ -208,28 +238,47 @@ export default function CampaignAccordion({ data = [], loading = false, response
                       <TableBody>
                         {filteredAdsets.map((ad) => (
                           <TableRow key={ad.sub_id_2}>
-                            <TableCell className="whitespace-normal break-words">{ad.sub_id_5}</TableCell>
-                            <TableCell className="whitespace-normal break-words" title={ad.sub_id_6}>
+                            <TableCell className="whitespace-normal break-words">
+                              {ad.sub_id_5}
+                            </TableCell>
+                            <TableCell
+                              className="whitespace-normal break-words"
+                              title={ad.sub_id_6}
+                            >
                               {ad.sub_id_6}
                             </TableCell>
                             <TableCell>
                               <Badge
-                                variant={getRecommendationColor(ad.recommendation)}
+                                variant={getRecommendationColor(
+                                  ad.recommendation
+                                )}
                                 className="flex items-center gap-1 w-fit capitalize"
                               >
                                 {getRecommendationIcon(ad.recommendation)}
                                 {ad.recommendation}
                               </Badge>
                             </TableCell>
-                            <TableCell className="whitespace-normal break-words" title={ad.reason}>
+                            <TableCell
+                              className="whitespace-normal break-words"
+                              title={ad.reason}
+                            >
                               {ad.reason}
                             </TableCell>
-                            <TableCell className="whitespace-normal break-words" title={ad.suggestion}>
+                            <TableCell
+                              className="whitespace-normal break-words"
+                              title={ad.suggestion}
+                            >
                               {ad.suggestion}
                             </TableCell>
                             <TableCell>{formatCurrency(ad.cost)}</TableCell>
                             <TableCell>{formatCurrency(ad.revenue)}</TableCell>
-                            <TableCell className={ad.profit >= 0 ? "text-green-600" : "text-red-600"}>
+                            <TableCell
+                              className={
+                                ad.profit >= 0
+                                  ? "text-green-600"
+                                  : "text-red-600"
+                              }
+                            >
                               {formatCurrency(ad.profit)}
                             </TableCell>
                             <TableCell>{ad.clicks}</TableCell>
@@ -244,8 +293,16 @@ export default function CampaignAccordion({ data = [], loading = false, response
                                 {ad.cpc_rate}
                               </Badge>
                             </TableCell>
-                            <TableCell>{formatPercentage(ad.conversion_rate)}</TableCell>
-                            <TableCell className={ad.roi_confirmed >= 0 ? "text-green-600" : "text-red-600"}>
+                            <TableCell>
+                              {formatPercentage(ad.conversion_rate)}
+                            </TableCell>
+                            <TableCell
+                              className={
+                                ad.roi_confirmed >= 0
+                                  ? "text-green-600"
+                                  : "text-red-600"
+                              }
+                            >
                               {formatPercentage(ad.roi_confirmed / 100)}
                             </TableCell>
                             <TableCell>{ad.priority}</TableCell>
@@ -274,7 +331,6 @@ export default function CampaignAccordion({ data = [], loading = false, response
         </Accordion>
       </CardContent>
 
-      {/* Confirm Pause Modal */}
       <ConfirmModal
         open={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
@@ -285,6 +341,89 @@ export default function CampaignAccordion({ data = [], loading = false, response
           }
         }}
       />
+
+      {/* Hover Modal */}
+      {hoverModalOpen && hoveredCampaign && (
+        <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-300 shadow-lg rounded p-4 w-[900px] text-sm overflow-hidden ">
+          <h4 className="text-base font-semibold mb-4 text-gray-800">
+            Campaign Summary
+          </h4>
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-slate-100">
+                <TableCell>ID</TableCell>
+                <TableCell>Sub ID 6</TableCell>
+                <TableCell>Sub ID 3</TableCell>
+                <TableCell>Total Cost</TableCell>
+                <TableCell>Total Revenue</TableCell>
+                <TableCell>Total Profit</TableCell>
+                <TableCell>Total Clicks</TableCell>
+                <TableCell>Avg. CPC</TableCell>
+                <TableCell>Avg. ROI</TableCell>
+                <TableCell>Avg. Conv. Rate</TableCell>
+                <TableCell>Recommendation</TableCell>
+                <TableCell>Recommendation %</TableCell>
+                <TableCell>Total Budget Change %</TableCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell className="whitespace-normal break-words">
+                  {hoveredCampaign.id}
+                </TableCell>
+                <TableCell className="whitespace-normal break-words">
+                  {hoveredCampaign.sub_id_6 || "N/A"}
+                </TableCell>
+                <TableCell className="whitespace-normal break-words">
+                  {hoveredCampaign.sub_id_3 || "N/A"}
+                </TableCell>
+                <TableCell>
+                  {formatCurrency(hoveredCampaign.total_cost)}
+                </TableCell>
+                <TableCell>
+                  {formatCurrency(hoveredCampaign.total_revenue)}
+                </TableCell>
+                <TableCell
+                  className={
+                    hoveredCampaign.total_profit >= 0
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }
+                >
+                  {formatCurrency(hoveredCampaign.total_profit)}
+                </TableCell>
+                <TableCell>{hoveredCampaign.total_clicks ?? "N/A"}</TableCell>
+                <TableCell>
+                  {hoveredCampaign.average_cpc != null
+                    ? `$${hoveredCampaign.average_cpc.toFixed(2)}`
+                    : "N/A"}
+                </TableCell>
+                <TableCell>
+                  {hoveredCampaign.average_roi != null
+                    ? `${hoveredCampaign.average_roi.toFixed(2)}%`
+                    : "N/A"}
+                </TableCell>
+                <TableCell>
+                  {hoveredCampaign.average_conversion_rate != null
+                    ? `${hoveredCampaign.average_conversion_rate.toFixed(2)}%`
+                    : "N/A"}
+                </TableCell>
+                <TableCell>{hoveredCampaign.recommendation || "N/A"}</TableCell>
+                <TableCell>
+                  {hoveredCampaign.recommendation_percentage != null
+                    ? `${hoveredCampaign.recommendation_percentage}%`
+                    : "N/A"}
+                </TableCell>
+                <TableCell>
+                  {hoveredCampaign.total_budget_change_pct_sum != null
+                    ? `${hoveredCampaign.total_budget_change_pct_sum}%`
+                    : "N/A"}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </Card>
   );
 }
