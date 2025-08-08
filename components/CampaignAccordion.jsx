@@ -356,87 +356,100 @@ export default function CampaignAccordion({
 
       {/* Hover Modal */}
       {hoverModalOpen && hoveredCampaign && (
-      <div
-        className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-300 shadow-lg rounded p-4 w-full max-w-[1600px] text-sm overflow-visible"
-        style={{ maxHeight: "none", height: "auto" }}
-        role="dialog"
-        aria-modal="true"
-      >
-        <button
-          onClick={() => setHoverModalOpen(false)}
-          className="absolute top-2 right-2 text-gray-500 hover:text-black"
-          aria-label="Close modal"
-          type="button"
+        <div
+          className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-300 shadow-lg rounded p-4 w-full max-w-[1600px] text-sm overflow-visible"
+          style={{ maxHeight: "none", height: "auto" }}
+          role="dialog"
+          aria-modal="true"
         >
-          ✕
-        </button>
+          <button
+            onClick={() => setHoverModalOpen(false)}
+            className="absolute top-2 right-2 text-gray-500 hover:text-black"
+            aria-label="Close modal"
+            type="button"
+          >
+            ✕
+          </button>
 
-        <h4 className="text-base font-semibold mb-4 text-gray-800">
-          Campaign Summary
-        </h4>
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-slate-100">
-              <TableCell>Campaign Name</TableCell>
-              <TableCell>ID</TableCell>
-              <TableCell>Cost</TableCell>
-              <TableCell>Revenue</TableCell>
-              <TableCell>Profit</TableCell>
-              <TableCell>Clicks</TableCell>
-              <TableCell>CPC</TableCell>
-              <TableCell>ROI</TableCell>
-              <TableCell>Conv. Rate</TableCell>
-              <TableCell>Recommendation</TableCell>
-              <TableCell>Budget Change %</TableCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow>
-              <TableCell className="whitespace-normal break-words">
-                {hoveredCampaign.sub_id_6 || "N/A"}
-              </TableCell>
-              <TableCell className="whitespace-normal break-words">
-                {hoveredCampaign.sub_id_3 || "N/A"}
-              </TableCell>
-              <TableCell>{formatCurrency(hoveredCampaign.total_cost)}</TableCell>
-              <TableCell>{formatCurrency(hoveredCampaign.total_revenue)}</TableCell>
-              <TableCell
-                className={
-                  hoveredCampaign.total_profit >= 0
-                    ? "text-green-600"
-                    : "text-red-600"
-                }
-              >
-                {formatCurrency(hoveredCampaign.total_profit)}
-              </TableCell>
-              <TableCell>{hoveredCampaign.total_clicks ?? "N/A"}</TableCell>
-              <TableCell>
-                {hoveredCampaign.average_cpc != null
-                  ? `$${hoveredCampaign.average_cpc.toFixed(2)}`
-                  : "N/A"}
-              </TableCell>
-              <TableCell>
-                {hoveredCampaign.average_roi != null
-                  ? `${hoveredCampaign.average_roi.toFixed(2)}%`
-                  : "N/A"}
-              </TableCell>
-              <TableCell>
-                {hoveredCampaign.average_conversion_rate != null
-                  ? `${hoveredCampaign.average_conversion_rate.toFixed(2)}%`
-                  : "N/A"}
-              </TableCell>
-              <TableCell>{hoveredCampaign.recommendation || "N/A"}</TableCell>
-              <TableCell>
-                {hoveredCampaign.total_budget_change_pct_sum != null
-                  ? `${hoveredCampaign.total_budget_change_pct_sum}%`
-                  : "N/A"}
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </div>
-    )}
-
+          <h4 className="text-base font-semibold mb-4 text-gray-800">
+            Campaign Summary
+          </h4>
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-slate-100">
+                <TableCell>Campaign Name</TableCell>
+                <TableCell>ID</TableCell>
+                <TableCell>Cost</TableCell>
+                <TableCell>Revenue</TableCell>
+                <TableCell>Profit</TableCell>
+                <TableCell>Clicks</TableCell>
+                <TableCell>CPC</TableCell>
+                <TableCell>ROI</TableCell>
+                <TableCell>Conv. Rate</TableCell>
+                <TableCell>Recommendation</TableCell>
+                <TableCell>Budget Change %</TableCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell className="whitespace-normal break-words">
+                  {hoveredCampaign.sub_id_6 || "N/A"}
+                </TableCell>
+                <TableCell className="whitespace-normal break-words">
+                  {hoveredCampaign.sub_id_3 || "N/A"}
+                </TableCell>
+                <TableCell>
+                  {formatCurrency(hoveredCampaign.total_cost)}
+                </TableCell>
+                <TableCell>
+                  {formatCurrency(hoveredCampaign.total_revenue)}
+                </TableCell>
+                <TableCell
+                  className={
+                    hoveredCampaign.total_profit >= 0
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }
+                >
+                  {formatCurrency(hoveredCampaign.total_profit)}
+                </TableCell>
+                <TableCell>{hoveredCampaign.total_clicks ?? "N/A"}</TableCell>
+                <TableCell>
+                  {hoveredCampaign.total_cpc != null
+                    ? `$${hoveredCampaign.total_cpc.toFixed(2)}`
+                    : "N/A"}
+                </TableCell>
+                <TableCell>
+                  {hoveredCampaign.total_roi != null
+                    ? `${hoveredCampaign.total_roi.toFixed(2)}%`
+                    : "N/A"}
+                </TableCell>
+                <TableCell>
+                  {hoveredCampaign.total_conversion_rate != null
+                    ? `${hoveredCampaign.total_conversion_rate.toFixed(2)}%`
+                    : "N/A"}
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    about={getRecommendationColor(
+                      hoveredCampaign.recommendation
+                    )}
+                    className="flex items-center gap-1 w-fit capitalize"
+                  >
+                    {getRecommendationIcon(hoveredCampaign.recommendation)}
+                    {hoveredCampaign.recommendation}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  {hoveredCampaign.recommendation_percentage != null
+                    ? `${hoveredCampaign.recommendation_percentage}%`
+                    : "N/A"}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </Card>
   );
 }
