@@ -95,6 +95,18 @@ export default function CampaignAccordion({
     }
   }, [data]);
 
+  // Body scroll lock when hover modal is open
+  useEffect(() => {
+    if (hoverModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [hoverModalOpen]);
+
   const handlePauseAction = async (subId2) => {
     try {
       const response = await fetch(
@@ -344,7 +356,21 @@ export default function CampaignAccordion({
 
       {/* Hover Modal */}
       {hoverModalOpen && hoveredCampaign && (
-        <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-300 shadow-lg rounded p-4 w-[900px] text-sm overflow-hidden ">
+        <div
+          className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-300 shadow-lg rounded p-4 w-full max-w-[1600px] text-sm overflow-visible"
+          style={{ maxHeight: "none", height: "auto" }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <button
+            onClick={() => setHoverModalOpen(false)}
+            className="absolute top-2 right-2 text-gray-500 hover:text-black"
+            aria-label="Close modal"
+            type="button"
+          >
+            ✕
+          </button>
+
           <h4 className="text-base font-semibold mb-4 text-gray-800">
             Campaign Summary
           </h4>
@@ -354,16 +380,16 @@ export default function CampaignAccordion({
                 <TableCell>ID</TableCell>
                 <TableCell>Sub ID 6</TableCell>
                 <TableCell>Sub ID 3</TableCell>
-                <TableCell>Total Cost</TableCell>
-                <TableCell>Total Revenue</TableCell>
-                <TableCell>Total Profit</TableCell>
-                <TableCell>Total Clicks</TableCell>
-                <TableCell>Avg. CPC</TableCell>
-                <TableCell>Avg. ROI</TableCell>
-                <TableCell>Avg. Conv. Rate</TableCell>
+                <TableCell>Cost</TableCell>
+                <TableCell>Revenue</TableCell>
+                <TableCell>Profit</TableCell>
+                <TableCell>Clicks</TableCell>
+                <TableCell>CPC</TableCell>
+                <TableCell>ROI</TableCell>
+                <TableCell>Conv. Rate</TableCell>
                 <TableCell>Recommendation</TableCell>
                 <TableCell>Recommendation %</TableCell>
-                <TableCell>Total Budget Change %</TableCell>
+                <TableCell>Budget Change %</TableCell>
               </TableRow>
             </TableHeader>
             <TableBody>
