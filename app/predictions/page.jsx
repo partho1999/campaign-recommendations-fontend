@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button"
 import CampaignAccordion from "@/components/CampaignAccordion";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/NavBar";
 import {
   Accordion,
   AccordionContent,
