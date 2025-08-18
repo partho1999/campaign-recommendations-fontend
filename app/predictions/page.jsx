@@ -245,7 +245,7 @@ export default function Page() {
               )}
               {activeTab === "tab2" && (
                 <>
-                  <Card className="w-full">
+                  <Card className="w-full space-y-4 mb-4">
                     <CardHeader>
                       <CardTitle className="text-indigo-700 text-start">Add Filter</CardTitle>
                       <CardDescription className="text-gray-500 text-start">
