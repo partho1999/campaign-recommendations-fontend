@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button"
 import CampaignAccordion from "@/components/CampaignAccordion";
+import Navbar from "@/components/Navbar";
 import {
   Accordion,
   AccordionContent,
@@ -129,7 +130,8 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6 dark:from-slate-900 dark:to-slate-950">
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="max-w-[1600px] mx-auto space-y-8">
+        <Navbar />
         {/* Loading */}
         {loading && (
           <Card>
@@ -155,6 +157,7 @@ export default function Page() {
         {/* Summary */}
         {!loading && response?.success && Object.keys(summary).length > 0 && (
           <>
+          
           <div className="text-center space-y-2">
             <h1 className="text-4xl font-bold text-gray-900">Ad Recommendation Dashboard</h1>
             <p className="text-gray-600">Monitor and optimize your advertising campaigns</p>
@@ -200,10 +203,10 @@ export default function Page() {
           </Card>
           </>
         )}
-        <div className="w-full flex flex-col items-center">
+        <div className="w-full flex flex-col">
           {/* Tabs */}
           {!loading && response?.success && data.length > 0 && (
-            <div role="tablist" className="flex border-b border-gray-200 space-x-4 mb-4">
+            <div role="tablist" className="flex justify-center border-b border-gray-200 space-x-4 mb-4">
               <button
                 role="tab"
                 onClick={() => {
