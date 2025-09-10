@@ -130,7 +130,7 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6 dark:from-slate-900 dark:to-slate-950">
-      <div className="max-w-[1600px] mx-auto space-y-8">
+      <div className="space-y-8">
         {!loading && response?.success && (
           <Navbar />
         )}
