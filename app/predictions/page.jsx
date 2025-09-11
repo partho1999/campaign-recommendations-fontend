@@ -291,7 +291,8 @@ export default function Page() {
                           </div>
                     </CardContent>
                   </Card>
-                  <CampaignAccordion data={data} loading={loading} response={response} />
+                  <CampaignTable data={data} />
+                  {/* <CampaignAccordion data={data} loading={loading} response={response} /> */}
                 </>
               )}
             </div>
