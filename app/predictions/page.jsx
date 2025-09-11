@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button"
 import CampaignAccordion from "@/components/CampaignAccordion";
+import CampaignTable from "@/components/ExpendableTable";
 import Navbar from "@/components/NavBar";
 import {
   Accordion,
@@ -241,7 +242,11 @@ export default function Page() {
           {!loading && response?.success && data.length > 0 && (
             <div className="mt-4 text-center">
               {activeTab === "tab1" && (
-                <CampaignAccordion data={data} loading={loading} response={response} />
+                <>
+                  <CampaignTable data={data} />
+                  {/* <CampaignAccordion data={data} loading={loading} response={response} /> */}
+                </>
+                
               )}
               {activeTab === "tab2" && (
                 <>
