@@ -17,6 +17,7 @@ import {
 import { Pause } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import ActionModal from "@/components/ActionModal";
+import { updateAdsetStatus } from "@/lib/api";
 
 const ExpendableTable = ({ data }) => {
   const [selectedRecommendation, setSelectedRecommendation] = useState("");
@@ -25,6 +26,7 @@ const ExpendableTable = ({ data }) => {
   const [selectedAdsetId, setSelectedAdsetId] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [adsetSortConfig, setAdsetSortConfig] = useState({});
+  const [pausedAdsets, setPausedAdsets] = useState({}); // ✅ track paused state per adset
 
   const handlePauseAction = async (subId2) => {
     try {
@@ -35,6 +37,17 @@ const ExpendableTable = ({ data }) => {
       if (!response.ok) throw new Error(`Failed to pause adset ${subId2}`);
       await response.json();
       alert(`Adset ${subId2} paused successfully.`);
+
+      try {
+        const updatedAdset = await updateAdsetStatus(subId2, false);
+        console.log("Adset updated:", updatedAdset);
+      } catch (error) {
+        console.error(error);
+        console.log("Failed to update adset status");
+      }
+
+      // ✅ mark only this adset as paused
+      setPausedAdsets((prev) => ({ ...prev, [subId2]: true }));
     } catch (error) {
       alert(`Failed to pause Adset ${subId2}`);
     }
@@ -78,21 +91,36 @@ const ExpendableTable = ({ data }) => {
 
   const getRecommendationColor = (recommendation) => {
     switch (recommendation) {
-      case "PAUSE": return "text-red-600";
-      case "INCREASE_BUDGET": return "text-green-600";
-      case "KEEP_RUNNING": return "text-blue-600";
-      case "OPTIMIZE": return "text-orange-600";
-      default: return "text-gray-700";
+      case "PAUSE":
+        return "text-red-600";
+      case "INCREASE_BUDGET":
+        return "text-green-600";
+      case "KEEP_RUNNING":
+        return "text-blue-600";
+      case "OPTIMIZE":
+        return "text-orange-600";
+      default:
+        return "text-gray-700";
     }
   };
 
   const getCpcRateColor = (rate) => {
     switch (rate) {
-      case "STANDARD": return "text-blue-600";
-      case "HIGH": return "text-red-600";
-      case "LOW": return "text-green-600";
-      default: return "text-gray-700";
+      case "STANDARD":
+        return "text-blue-600";
+      case "HIGH":
+        return "text-red-600";
+      case "LOW":
+        return "text-green-600";
+      default:
+        return "text-gray-700";
     }
+  };
+
+  const getStatusColor = (status) => {
+    if (status.toLowerCase() === "active") return "text-green-600";
+    if (status.toLowerCase() === "paused") return "text-red-600";
+    return "text-gray-700";
   };
 
   // Filter campaigns by recommendation
@@ -126,27 +154,51 @@ const ExpendableTable = ({ data }) => {
         onClick={() => handleExpand(campaign.id)}
       >
         <TableCell className="px-4 py-1 flex items-center text-left">
-          <span className={`mr-2 transform transition-transform duration-200 ${isExpanded(campaign.id) ? "rotate-90" : ""}`}>
+          <span
+            className={`mr-2 transform transition-transform duration-200 ${
+              isExpanded(campaign.id) ? "rotate-90" : ""
+            }`}
+          >
             &gt;
           </span>
           {campaign.sub_id_6}
         </TableCell>
         <TableCell className="px-2 py-1 text-left">{campaign.sub_id_3}</TableCell>
-        <TableCell className="px-2 py-1 text-left">{campaign.total_cost.toFixed(2)}</TableCell>
-        <TableCell className="px-2 py-1 text-left">{campaign.total_revenue.toFixed(2)}</TableCell>
-        <TableCell className="px-2 py-1 text-left">{campaign.total_profit.toFixed(2)}</TableCell>
+        <TableCell className="px-2 py-1 text-left">
+          {campaign.total_cost.toFixed(2)}
+        </TableCell>
+        <TableCell className="px-2 py-1 text-left">
+          {campaign.total_revenue.toFixed(2)}
+        </TableCell>
+        <TableCell className="px-2 py-1 text-left">
+          {campaign.total_profit.toFixed(2)}
+        </TableCell>
         <TableCell className="px-2 py-1 text-left">{campaign.total_clicks}</TableCell>
-        <TableCell className="px-2 py-1 text-left">{campaign.total_cpc.toFixed(2)}</TableCell>
+        <TableCell className="px-2 py-1 text-left">
+          {campaign.total_cpc.toFixed(2)}
+        </TableCell>
         <TableCell className="px-2 py-1 text-left">{campaign.geo}</TableCell>
         <TableCell className="px-2 py-1 text-left">{campaign.country}</TableCell>
-        <TableCell className={`px-2 py-1 text-left font-semibold ${getROIColor(campaign.total_roi)}`}>
+        <TableCell
+          className={`px-2 py-1 text-left font-semibold ${getROIColor(
+            campaign.total_roi
+          )}`}
+        >
           {campaign.total_roi.toFixed(2)}
         </TableCell>
-        <TableCell className="px-2 py-1 text-left">{campaign.total_conversion_rate.toFixed(2)}</TableCell>
-        <TableCell className={`px-2 py-1 text-left font-semibold ${getRecommendationColor(campaign.recommendation)}`}>
+        <TableCell className="px-2 py-1 text-left">
+          {campaign.total_conversion_rate.toFixed(2)}
+        </TableCell>
+        <TableCell
+          className={`px-2 py-1 text-left font-semibold ${getRecommendationColor(
+            campaign.recommendation
+          )}`}
+        >
           {campaign.recommendation}
         </TableCell>
-        <TableCell className="px-2 py-1 text-left">{campaign.recommendation_percentage}</TableCell>
+        <TableCell className="px-2 py-1 text-left">
+          {campaign.recommendation_percentage}
+        </TableCell>
         <TableCell className="px-2 py-1 text-left">
           {campaign.recommendation === "INCREASE_BUDGET" && (
             <div className="inline-block" onClick={(e) => e.stopPropagation()}>
@@ -179,6 +231,7 @@ const ExpendableTable = ({ data }) => {
         { name: "ROI (%)", key: "roi_confirmed" },
         { name: "Conv. Rate", key: "conversion_rate" },
         { name: "Priority", key: "priority" },
+        { name: "Status", key: "status" },
         { name: "Action", key: null },
       ];
 
@@ -193,7 +246,12 @@ const ExpendableTable = ({ data }) => {
               className="px-2 py-1 text-left cursor-pointer"
               onClick={() => col.key && handleAdsetSort(campaign.id, col.key)}
             >
-              {col.name} {adsetSortConfig[campaign.id]?.key === col.key ? (adsetSortConfig[campaign.id].direction === "asc" ? "↑" : "↓") : ""}
+              {col.name}{" "}
+              {adsetSortConfig[campaign.id]?.key === col.key
+                ? adsetSortConfig[campaign.id].direction === "asc"
+                  ? "↑"
+                  : "↓"
+                : ""}
             </TableHead>
           ))}
         </TableRow>
@@ -206,37 +264,75 @@ const ExpendableTable = ({ data }) => {
         adsets.sort((a, b) => {
           const valA = a[adsetSort.key];
           const valB = b[adsetSort.key];
-          if (typeof valA === "number" && typeof valB === "number") return adsetSort.direction === "asc" ? valA - valB : valB - valA;
-          if (typeof valA === "string" && typeof valB === "string") return adsetSort.direction === "asc" ? valA.localeCompare(valB) : valB.localeCompare(valA);
+          if (typeof valA === "number" && typeof valB === "number")
+            return adsetSort.direction === "asc" ? valA - valB : valB - valA;
+          if (typeof valA === "string" && typeof valB === "string")
+            return adsetSort.direction === "asc"
+              ? valA.localeCompare(valB)
+              : valB.localeCompare(valA);
           return 0;
         });
       }
 
       adsets.forEach((ad) => {
+        const isDisabled =
+          pausedAdsets[ad.sub_id_2] || ad.status.toLowerCase() === "paused";
+
         rows.push(
           <TableRow
             key={ad.sub_id_2}
             className="bg-gray-50 text-xs text-gray-700 border-b"
           >
             <TableCell className="px-8 py-1 text-left">{ad.sub_id_5}</TableCell>
-            <TableCell className={`px-2 py-1 text-left font-semibold ${getRecommendationColor(ad.recommendation)}`}>
+            <TableCell
+              className={`px-2 py-1 text-left font-semibold ${getRecommendationColor(
+                ad.recommendation
+              )}`}
+            >
               {ad.recommendation}
             </TableCell>
             <TableCell className="px-2 py-1 text-left">{ad.reason}</TableCell>
             <TableCell className="px-2 py-1 text-left">{ad.suggestion}</TableCell>
-            <TableCell className="px-2 py-1 text-left">{ad.cost.toFixed(2)}</TableCell>
-            <TableCell className="px-2 py-1 text-left">{ad.revenue.toFixed(2)}</TableCell>
-            <TableCell className="px-2 py-1 text-left">{ad.profit.toFixed(2)}</TableCell>
+            <TableCell className="px-2 py-1 text-left">
+              {ad.cost.toFixed(2)}
+            </TableCell>
+            <TableCell className="px-2 py-1 text-left">
+              {ad.revenue.toFixed(2)}
+            </TableCell>
+            <TableCell className="px-2 py-1 text-left">
+              {ad.profit.toFixed(2)}
+            </TableCell>
             <TableCell className="px-2 py-1 text-left">{ad.clicks}</TableCell>
-            <TableCell className="px-2 py-1 text-left">{ad.cpc.toFixed(2)}</TableCell>
+            <TableCell className="px-2 py-1 text-left">
+              {ad.cpc.toFixed(2)}
+            </TableCell>
             <TableCell className="px-2 py-1 text-left">{ad.geo}</TableCell>
             <TableCell className="px-2 py-1 text-left">{ad.country}</TableCell>
-            <TableCell className={`px-2 py-1 text-left font-semibold ${getCpcRateColor(ad.cpc_rate)}`}>{ad.cpc_rate}</TableCell>
-            <TableCell className={`px-2 py-1 text-left font-semibold ${getROIColor(ad.roi_confirmed)}`}>
+            <TableCell
+              className={`px-2 py-1 text-left font-semibold ${getCpcRateColor(
+                ad.cpc_rate
+              )}`}
+            >
+              {ad.cpc_rate}
+            </TableCell>
+            <TableCell
+              className={`px-2 py-1 text-left font-semibold ${getROIColor(
+                ad.roi_confirmed
+              )}`}
+            >
               {ad.roi_confirmed.toFixed(2)}
             </TableCell>
-            <TableCell className="px-2 py-1 text-left">{ad.conversion_rate.toFixed(2)}</TableCell>
+            <TableCell className="px-2 py-1 text-left">
+              {ad.conversion_rate.toFixed(2)}
+            </TableCell>
             <TableCell className="px-2 py-1 text-left">{ad.priority}</TableCell>
+            <TableCell
+              className={`px-2 py-1 text-left font-semibold ${
+                getStatusColor(pausedAdsets[ad.sub_id_2] ? "paused" : ad.status)
+              }`}
+            >
+              {pausedAdsets[ad.sub_id_2] ? "Paused" : ad.status}
+            </TableCell>
             <TableCell className="px-2 py-1 text-left">
               <button
                 onClick={(e) => {
@@ -244,7 +340,10 @@ const ExpendableTable = ({ data }) => {
                   setSelectedAdsetId(ad.sub_id_2);
                   setShowConfirmModal(true);
                 }}
-                className="text-destructive"
+                className={`text-destructive ${
+                  isDisabled ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={isDisabled}
               >
                 <Pause className="h-4 w-4" />
               </button>
@@ -260,14 +359,28 @@ const ExpendableTable = ({ data }) => {
   return (
     <Card className="w-full relative">
       <CardHeader>
-        <CardTitle className="text-indigo-700 text-start">🧠 Campaign Recommendations</CardTitle>
-        <CardDescription className="text-gray-500 text-start">Grouped by Campaign ID</CardDescription>
+        <CardTitle className="text-indigo-700 text-start">
+          🧠 Campaign Recommendations
+        </CardTitle>
+        <CardDescription className="text-gray-500 text-start">
+          Grouped by Campaign ID
+        </CardDescription>
       </CardHeader>
 
       <CardContent>
         <div className="mb-4 flex items-center gap-2 flex-wrap">
-          <span className="text-sm font-medium text-gray-700">Filter by Recommendation:</span>
-          {["", "PAUSE", "INCREASE_BUDGET", "OPTIMIZE", "RESTRUCTURE", "KEEP_RUNNING", "REVIEW"].map((rec) => (
+          <span className="text-sm font-medium text-gray-700">
+            Filter by Recommendation:
+          </span>
+          {[
+            "",
+            "PAUSE",
+            "INCREASE_BUDGET",
+            "OPTIMIZE",
+            "RESTRUCTURE",
+            "KEEP_RUNNING",
+            "REVIEW",
+          ].map((rec) => (
             <button
               key={rec || "all"}
               onClick={() => setSelectedRecommendation(rec)}
@@ -307,7 +420,12 @@ const ExpendableTable = ({ data }) => {
                     className="px-2 py-1 text-left cursor-pointer"
                     onClick={() => col.key && handleSort(col.key)}
                   >
-                    {col.name} {sortConfig.key === col.key ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
+                    {col.name}{" "}
+                    {sortConfig.key === col.key
+                      ? sortConfig.direction === "asc"
+                        ? "↑"
+                        : "↓"
+                      : ""}
                   </TableHead>
                 ))}
               </TableRow>
