@@ -30,13 +30,13 @@ const ExpendableTable = ({ data }) => {
 
   const handlePauseAction = async (subId2) => {
     try {
-      const response = await fetch(
-        `https://app.wijte.me/api/adset/pause/${subId2}`,
-        { method: "POST", headers: { "Content-Type": "application/json" } }
-      );
-      if (!response.ok) throw new Error(`Failed to pause adset ${subId2}`);
-      await response.json();
-      alert(`Adset ${subId2} paused successfully.`);
+      // const response = await fetch(
+      //   `https://app.wijte.me/api/adset/pause/${subId2}`,
+      //   { method: "POST", headers: { "Content-Type": "application/json" } }
+      // );
+      // if (!response.ok) throw new Error(`Failed to pause adset ${subId2}`);
+      // await response.json();
+      // alert(`Adset ${subId2} paused successfully.`);
 
       try {
         const updatedAdset = await updateAdsetStatus(subId2, false);
